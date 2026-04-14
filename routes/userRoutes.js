@@ -1,7 +1,7 @@
 const userModel = require("../models/userModel");
 
 const jwt = require("jsonwebtoken");
-const bcrypt = require("bcryptjs");
+const bcrypt = require("bcrypt");
 const validator = require("validator");
 
 const express = require("express");
@@ -73,3 +73,5 @@ userRouter.get("/getUser", authMiddleware, async (req, res) => {
   }
   res.status(200).json({ success: true, user });
 });
+
+module.exports = userRouter;
