@@ -1,18 +1,6 @@
-import { createFileRoute, Link, redirect } from "@tanstack/react-router";
+import { createFileRoute, Link } from "@tanstack/react-router";
 
-// TODO: Import useUserStore from your store definition file
-
-export const Route = createFileRoute("/")({
-  // beforeLoad: () => {
-  //   if (
-  //     typeof useUserStore !== "undefined" &&
-  //     useUserStore.getState().isAuthenticated()
-  //   ) {
-  //     throw redirect({
-  //       to: "/home",
-  //     });
-  //   }
-  // },
+export const Route = createFileRoute("/signup")({
   component: RouteComponent,
 });
 
@@ -23,16 +11,37 @@ function RouteComponent() {
         <div className="rounded-2xl border border-zinc-200 bg-white p-8 shadow-sm">
           <header className="mb-8">
             <h1 className="text-2xl font-semibold tracking-tight text-green-600">
-              Simple Messenger
+              Messenger
             </h1>
+            <p className="mt-1 text-sm text-zinc-600">
+              Create an account to start chatting.
+            </p>
           </header>
 
-          <h2 className="text-base font-medium text-zinc-900">Log in</h2>
+          <h2 className="text-base font-medium text-zinc-900">Sign up</h2>
           <p className="mt-1 text-sm text-zinc-600">
-            Welcome back. Enter your details to continue.
+            Minimal setup. Just the basics.
           </p>
 
           <form className="mt-6 space-y-4">
+            <div className="space-y-2">
+              <label
+                htmlFor="name"
+                className="text-sm font-medium text-zinc-800"
+              >
+                Name
+              </label>
+              <input
+                id="name"
+                name="name"
+                type="text"
+                autoComplete="name"
+                required
+                className="h-10 w-full rounded-xl border border-zinc-200 bg-white px-3 text-sm text-zinc-900 outline-none transition focus:border-zinc-400 focus:ring-2 focus:ring-zinc-200"
+                placeholder="Your name"
+              />
+            </div>
+
             <div className="space-y-2">
               <label
                 htmlFor="email"
@@ -62,7 +71,7 @@ function RouteComponent() {
                 id="password"
                 name="password"
                 type="password"
-                autoComplete="current-password"
+                autoComplete="new-password"
                 required
                 className="h-10 w-full rounded-xl border border-zinc-200 bg-white px-3 text-sm text-zinc-900 outline-none transition focus:border-zinc-400 focus:ring-2 focus:ring-zinc-200"
                 placeholder="••••••••"
@@ -73,17 +82,17 @@ function RouteComponent() {
               type="submit"
               className="mt-2 inline-flex h-10 w-full items-center justify-center rounded-xl bg-green-600 px-4 text-sm font-medium text-white transition hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-300"
             >
-              Log in
+              Create account
             </button>
           </form>
 
           <p className="mt-6 text-sm text-zinc-600">
-            Don&apos;t have an account?{" "}
+            Already have an account?{" "}
             <Link
-              to="/signup"
+              to="/"
               className="font-medium text-zinc-900 underline underline-offset-4 decoration-zinc-300 hover:decoration-zinc-500"
             >
-              Create one
+              Log in
             </Link>
           </p>
         </div>
