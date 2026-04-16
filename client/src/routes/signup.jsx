@@ -1,10 +1,21 @@
+import { useState } from "react";
 import { createFileRoute, Link } from "@tanstack/react-router";
+import axios from "axios";
 
 export const Route = createFileRoute("/signup")({
   component: RouteComponent,
 });
 
 function RouteComponent() {
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [name, setName] = useState("");
+
+  const handleSignup = (event) => {
+    event.preventDefault();
+    axios.post("/api/signup", { email, password, name });
+  };
+
   return (
     <div className="min-h-screen bg-white">
       <div className="mx-auto flex min-h-screen w-full max-w-md flex-col justify-center px-6 py-12">
@@ -23,7 +34,7 @@ function RouteComponent() {
             Minimal setup. Just the basics.
           </p>
 
-          <form className="mt-6 space-y-4">
+          <form className="mt-6 space-y-4" onSubmit={handleSignup}>
             <div className="space-y-2">
               <label
                 htmlFor="name"
@@ -39,6 +50,8 @@ function RouteComponent() {
                 required
                 className="h-10 w-full rounded-xl border border-zinc-200 bg-white px-3 text-sm text-zinc-900 outline-none transition focus:border-zinc-400 focus:ring-2 focus:ring-zinc-200"
                 placeholder="Your name"
+                value={name}
+                onChange={(e) => setName(e.target.value)}
               />
             </div>
 
@@ -57,6 +70,8 @@ function RouteComponent() {
                 required
                 className="h-10 w-full rounded-xl border border-zinc-200 bg-white px-3 text-sm text-zinc-900 outline-none transition focus:border-zinc-400 focus:ring-2 focus:ring-zinc-200"
                 placeholder="you@example.com"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
               />
             </div>
 
@@ -75,6 +90,8 @@ function RouteComponent() {
                 required
                 className="h-10 w-full rounded-xl border border-zinc-200 bg-white px-3 text-sm text-zinc-900 outline-none transition focus:border-zinc-400 focus:ring-2 focus:ring-zinc-200"
                 placeholder="••••••••"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
               />
             </div>
 
