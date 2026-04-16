@@ -10,7 +10,7 @@ const userRouter = express.Router();
 const authMiddleware = require("../middleware/authMiddleware");
 
 userRouter.post("/register", async (req, res) => {
-  const { email, password } = req.body;
+  const { email, password, name } = req.body;
 
   try {
     const userExists = await userModel.findOne({ email });
@@ -29,6 +29,7 @@ userRouter.post("/register", async (req, res) => {
     const newUser = await userModel({
       email,
       password: hashedPassword,
+      name
     });
     const user = await newUser.save();
     const token = createToken(user._id);

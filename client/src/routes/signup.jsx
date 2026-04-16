@@ -13,7 +13,7 @@ function RouteComponent() {
 
   const handleSignup = (event) => {
     event.preventDefault();
-    axios.post("/api/signup", { email, password, name });
+    axios.post(`${import.meta.env.VITE_API_URL}/api/user/register`, { email, password, name });
   };
 
   return (
