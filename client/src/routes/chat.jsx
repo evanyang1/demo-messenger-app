@@ -49,6 +49,14 @@ function RouteComponent() {
     <div className="p-4">
       <header className="flex flex-row">
         <h1 className="text-xl font-bold">Chat</h1>
+        <div className="relative ml-auto">
+          <input
+            type="text"
+            placeholder="Search user.."
+            className="bg-gray-100 text-gray-300 placeholder:text-gray-500 border border-gray-600
+             focus:outline-none focus:ring-2 focus:ring-gray-300 transition"
+          />
+        </div>
         <button
           onClick={handleLogout}
           className="text-white bg-green-600 px-4 py-2 rounded hover:bg-green-700
