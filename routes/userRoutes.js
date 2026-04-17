@@ -75,4 +75,28 @@ userRouter.get("/getUser", authMiddleware, async (req, res) => {
   res.status(200).json({ success: true, user });
 });
 
+// Add user to the current user's chat list
+userRouter.post('/addUserChat', authMiddleware, async (req, res) => {
+  const { userEmailQuery } = req.body;
+  const currentUser = req.user;
+  try {
+    usersInConversation = currentUser.usersInConversation || [];
+    // make sure this user exists, then make sure this user doesn't exist in the array, then add this user to the array
+    const userToAdd = await userModel.findOne({ email: userEmailQuery });
+    if (!userToAdd) {
+      return res.status(404).json({ message: "User not found" });
+    } else if (usersInConversation.includes(userToAdd._id)) {
+      return res.status(400).json({ message: "User already in chat list" });
+    } else {
+      usersInConversation.push(userToAdd._id);
+      currentUser.usersInConversation = usersInConversation;
+      await currentUser.save();
+      return res.status(200).json({ success: true, message: "User added to chat list" });
+    }
+  } catch (error) {
+    console.error("Error adding user to chat list:", error);
+    return res.status(500).json({ message: error.message });
+  }
+});
+
 module.exports = userRouter;
