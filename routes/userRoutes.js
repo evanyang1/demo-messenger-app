@@ -44,7 +44,7 @@ userRouter.post("/login", async (req, res) => {
   const { email, password } = req.body;
 
   try {
-    const user = await userModel.findOne({ email }).populate("tasks");
+    const user = await userModel.findOne({ email });
     if (!user) {
       return res.status(404).json({ message: "User not found" });
     }

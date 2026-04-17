@@ -5,16 +5,6 @@ import axios from "axios";
 // TODO: Import useUserStore from your store definition file
 
 export const Route = createFileRoute("/")({
-  // beforeLoad: () => {
-  //   if (
-  //     typeof useUserStore !== "undefined" &&
-  //     useUserStore.getState().isAuthenticated()
-  //   ) {
-  //     throw redirect({
-  //       to: "/home",
-  //     });
-  //   }
-  // },
   component: RouteComponent,
 });
 
@@ -22,8 +12,24 @@ function RouteComponent() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
 
-  function handleLogin(event) {
+  async function handleLogin(event) {
     event.preventDefault();
+    try {
+      const response = await axios.post(
+        `${import.meta.env.VITE_API_URL}/api/user/login`,
+        { email, password }
+      );
+      
+      localStorage.setItem("token", response.data.token);
+      localStorage.setItem("user", JSON.stringify(response.data.user));
+      // useUserStore.getState().setUser(response.data.user);
+      
+      window.history.pushState({}, "", "/chat");
+      window.dispatchEvent(new PopStateEvent("popstate"));
+    } catch (error) {
+      console.error("Login error:", error);
+      alert("Login failed: " + (error.response?.data?.message || error.message));
+    }
   }
 
   return (
