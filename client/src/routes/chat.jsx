@@ -1,4 +1,4 @@
-import { createFileRoute, Link, redirect } from "@tanstack/react-router";
+import { createFileRoute, Link, redirect, useNavigate } from "@tanstack/react-router";
 import axios from "axios";
 
 export const Route = createFileRoute("/chat")({
@@ -21,6 +21,7 @@ export const Route = createFileRoute("/chat")({
       console.error("Failed to fetch user:", error);
       // If the token is invalid or expired, clear it and redirect
       localStorage.removeItem("token");
+      localStorage.removeItem("user");
       throw redirect({ to: "/" });
     }
   },
@@ -29,10 +30,12 @@ export const Route = createFileRoute("/chat")({
 
 function RouteComponent() {
   const user = Route.useLoaderData();
+  const navigate = useNavigate();
 
   function handleLogout() {
     localStorage.removeItem("token");
-    throw redirect({ to: "/" });
+    localStorage.removeItem("user");
+    navigate({ to: "/" });
   }
 
   return (

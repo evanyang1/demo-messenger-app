@@ -1,4 +1,4 @@
-import { createFileRoute, Link, redirect } from "@tanstack/react-router";
+import { createFileRoute, Link, redirect, useNavigate } from "@tanstack/react-router";
 import { useState } from "react";
 import axios from "axios";
 
@@ -11,6 +11,7 @@ export const Route = createFileRoute("/")({
 function RouteComponent() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const navigate = useNavigate();
 
   async function handleLogin(event) {
     event.preventDefault();
@@ -24,8 +25,7 @@ function RouteComponent() {
       localStorage.setItem("user", JSON.stringify(response.data.user));
       // useUserStore.getState().setUser(response.data.user);
       
-      window.history.pushState({}, "", "/chat");
-      window.dispatchEvent(new PopStateEvent("popstate"));
+      navigate({ to: "/chat" });
     } catch (error) {
       console.error("Login error:", error);
       alert("Login failed: " + (error.response?.data?.message || error.message));
