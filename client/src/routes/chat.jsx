@@ -1,5 +1,12 @@
-import { createFileRoute, Link, redirect, useNavigate } from "@tanstack/react-router";
+import {
+  createFileRoute,
+  Link,
+  redirect,
+  useNavigate,
+} from "@tanstack/react-router";
 import axios from "axios";
+import Chat from "../components/chat/Chat";
+import ListChatPartners from "../components/chat/ListChatPartners";
 
 export const Route = createFileRoute("/chat")({
   loader: async () => {
@@ -40,17 +47,21 @@ function RouteComponent() {
 
   return (
     <div className="p-4">
-      <h1 className="text-xl font-bold">Chat</h1>
-      <p>
-        Welcome back, <span className="text-green-600">{user.name}</span>!
-      </p>
-      <div className="mt-4 text-sm text-zinc-500">Email: {user.email}</div>
-      <button
-        onClick={handleLogout}
-        className="text-blue-500 hover:underline"
-      >
-        Logout
-      </button>
+      <header className="flex flex-row">
+        <h1 className="text-xl font-bold">Chat</h1>
+        <button
+          onClick={handleLogout}
+          className="text-white bg-green-600 px-4 py-2 rounded hover:bg-green-700
+          focus:outline-none focus:ring-2 focus:ring-green-300 transition
+          ml-auto"
+        >
+          Logout
+        </button>
+      </header>
+      <section className="flex flex-row">
+        <ListChatPartners />
+        <Chat />
+      </section>
     </div>
   );
 }
