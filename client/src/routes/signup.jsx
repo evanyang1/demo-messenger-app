@@ -13,11 +13,16 @@ function RouteComponent() {
 
   const handleSignup = (event) => {
     event.preventDefault();
-    axios.post(`${import.meta.env.VITE_API_URL}/api/user/register`, {
-      email,
-      password,
-      name,
-    });
+    axios
+      .post(`${import.meta.env.VITE_API_URL}/api/user/register`, {
+        email,
+        password,
+        name,
+      })
+      .then((response) => {
+        console.log("Signup successful:", response.data); 
+        alert("Signup successful! Please log in.");
+      });
   };
 
   return (
