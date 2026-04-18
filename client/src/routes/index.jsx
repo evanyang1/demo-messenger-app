@@ -1,6 +1,7 @@
 import { createFileRoute, Link, redirect, useNavigate } from "@tanstack/react-router";
 import { useState } from "react";
 import axios from "axios";
+import { useUserStore } from "../store/useUserStore";
 
 // TODO: Import useUserStore from your store definition file
 
@@ -23,7 +24,7 @@ function RouteComponent() {
       
       localStorage.setItem("token", response.data.token);
       localStorage.setItem("user", JSON.stringify(response.data.user));
-      // useUserStore.getState().setUser(response.data.user);
+      useUserStore.getState().setUser(response.data.user);
       
       navigate({ to: "/chat" });
     } catch (error) {

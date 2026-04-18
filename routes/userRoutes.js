@@ -67,12 +67,15 @@ const createToken = (id) => {
 };
 
 userRouter.get("/getUser", authMiddleware, async (req, res) => {
-  // The user is attached to req by the authMiddleware
-  const user = req.user;
-  if (!user) {
-    return res.status(404).json({ message: "User not found" });
+  try {
+    const user = await userModel
+      .findById(req.user._id)
+      .populate("usersInConversation", "name email avatarUrl status")
+      .select("-password");
+    res.status(200).json({ success: true, user });
+  } catch (error) {
+    res.status(500).json({ message: error.message });
   }
-  res.status(200).json({ success: true, user });
 });
 
 // Add user to the current user's chat list, also add sender to receiver's chat list

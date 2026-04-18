@@ -6,8 +6,9 @@ import {
   useNavigate,
 } from "@tanstack/react-router";
 import axios from "axios";
-import Chat from "../components/chat/Chat";
+import ChatInstance from "../components/chat/ChatInstance";
 import ListChatPartners from "../components/chat/ListChatPartners";
+import { useUserStore } from "../store/useUserStore";
 
 export const Route = createFileRoute("/chat")({
   loader: async () => {
@@ -24,12 +25,13 @@ export const Route = createFileRoute("/chat")({
           headers: { Authorization: `Bearer ${token}` },
         },
       );
+      useUserStore.getState().setUser(response.data.user);
       return response.data.user;
     } catch (error) {
       console.error("Failed to fetch user:", error);
       // If the token is invalid or expired, clear it and redirect
       localStorage.removeItem("token");
-      localStorage.removeItem("user");
+      useUserStore.getState().logout();
       throw redirect({ to: "/" });
     }
   },
@@ -44,7 +46,7 @@ function RouteComponent() {
 
   function handleLogout() {
     localStorage.removeItem("token");
-    localStorage.removeItem("user");
+    useUserStore.getState().logout();
     navigate({ to: "/" });
   }
 
@@ -136,7 +138,7 @@ function RouteComponent() {
         </aside>
 
         <section className="flex-1 flex flex-col bg-white">
-          <Chat />
+          <ChatInstance />
         </section>
       </main>
     </div>
