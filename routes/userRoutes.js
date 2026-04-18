@@ -29,7 +29,7 @@ userRouter.post("/register", async (req, res) => {
     const newUser = await userModel({
       email,
       password: hashedPassword,
-      name
+      name,
     });
     const user = await newUser.save();
     const token = createToken(user._id);
@@ -75,8 +75,8 @@ userRouter.get("/getUser", authMiddleware, async (req, res) => {
   res.status(200).json({ success: true, user });
 });
 
-// Add user to the current user's chat list
-userRouter.post('/addUserChat', authMiddleware, async (req, res) => {
+// Add user to the current user's chat list, also add sender to receiver's chat list
+userRouter.post("/addUserChat", authMiddleware, async (req, res) => {
   const { userEmailQuery } = req.body;
   const currentUser = req.user;
   try {
@@ -86,12 +86,23 @@ userRouter.post('/addUserChat', authMiddleware, async (req, res) => {
     if (!userToAdd) {
       return res.status(404).json({ message: "User not found" });
     } else if (usersInConversation.includes(userToAdd._id)) {
+      console.log("User already in chat list");
       return res.status(400).json({ message: "User already in chat list" });
     } else {
       usersInConversation.push(userToAdd._id);
       currentUser.usersInConversation = usersInConversation;
       await currentUser.save();
-      return res.status(200).json({ success: true, message: "User added to chat list" });
+
+      // also add current user to the other user's chat list
+      const otherUserChatList = userToAdd.usersInConversation || [];
+      if (!otherUserChatList.includes(currentUser._id)) {
+        otherUserChatList.push(currentUser._id);
+        userToAdd.usersInConversation = otherUserChatList;
+        await userToAdd.save();
+      }
+      return res
+        .status(200)
+        .json({ success: true, message: "User added to chat list" });
     }
   } catch (error) {
     console.error("Error adding user to chat list:", error);

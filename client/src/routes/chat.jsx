@@ -48,17 +48,22 @@ function RouteComponent() {
     navigate({ to: "/" });
   }
 
-  function handleAddChatUser() {
+  async function handleAddChatUser() {
     const token = localStorage.getItem("token");
-    axios.post(
-      `${import.meta.env.VITE_API_URL}/api/user/addUserChat`,
-      {
-        userEmailQuery: searchUserQuery,
-      },
-      {
-        headers: { Authorization: `Bearer ${token}` },
-      },
-    );
+    try {
+      await axios.post(
+        `${import.meta.env.VITE_API_URL}/api/user/addUserChat`,
+        {
+          userEmailQuery: searchUserQuery,
+        },
+        {
+          headers: { Authorization: `Bearer ${token}` },
+        },
+      );
+    } catch (error) {
+      console.error("Failed to add chat user:", error);
+    }
+
     setSearchUserQuery("");
   }
 
