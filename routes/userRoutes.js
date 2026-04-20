@@ -54,7 +54,11 @@ userRouter.post("/login", async (req, res) => {
     }
 
     const token = createToken(user._id);
-    const { password: _, ...userWithoutPassword } = user.toObject();
+    const populatedUser = await user.populate(
+      "usersInConversation",
+      "name email avatarUrl status",
+    );
+    const { password: _, ...userWithoutPassword } = populatedUser.toObject();
     res.status(200).json({ success: true, token, user: userWithoutPassword });
   } catch (error) {
     console.error("Login error:", error);
