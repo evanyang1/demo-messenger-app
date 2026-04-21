@@ -1,12 +1,8 @@
-import { useEffect } from "react";
 import { useUserStore } from "../../store/useUserStore";
-
 
 const ListChatPartners = () => {
   const { user, selectedChatPartner, setSelectedChatPartner } = useUserStore();
   const partners = user?.usersInConversation || [];
-
-  console.log("user: " + JSON.stringify(user));
 
   return (
     <div className="flex flex-col h-full bg-white">

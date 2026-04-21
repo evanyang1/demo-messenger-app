@@ -62,11 +62,20 @@ function RouteComponent() {
           headers: { Authorization: `Bearer ${token}` },
         },
       );
+
+      // Refresh user data from server to get updated conversation list
+      const updatedUserResponse = await axios.get(
+        `${import.meta.env.VITE_API_URL}/api/user/getUser`,
+        {
+          headers: { Authorization: `Bearer ${token}` },
+        },
+      );
+      useUserStore.getState().setUser(updatedUserResponse.data.user);
+      setSearchUserQuery("");
     } catch (error) {
       console.error("Failed to add chat user:", error);
+      alert(error.response?.data?.message || "Failed to add user");
     }
-
-    setSearchUserQuery("");
   }
 
   return (
