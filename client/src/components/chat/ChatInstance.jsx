@@ -1,7 +1,10 @@
+import { useState } from "react";
 import { useUserStore } from "../../store/useUserStore";
+import axios from "axios";
 
 const ChatInstance = () => {
   const { selectedChatPartner } = useUserStore();
+  const [chatMessage, setChatMessage] = useState("");
 
   if (!selectedChatPartner) {
     return (
@@ -48,15 +51,49 @@ const ChatInstance = () => {
         </div>
       </div>
 
-      {/* Messages Area */}
-      <div className="flex-1 bg-zinc-50 p-6 overflow-y-auto">
-        <div className="text-center py-4">
-          <span className="text-xs bg-zinc-200 text-zinc-600 px-2 py-1 rounded-full uppercase tracking-wider font-semibold">
-            Today
-          </span>
+      {/* Scrollable Messages Area */}
+      <div className="flex-1 bg-zinc-50 overflow-y-auto p-4 sm:p-6 space-y-4 flex flex-col">
+        <div className="flex justify-center mb-4">
+          <div className="px-3 py-1 bg-zinc-200/50 rounded-full">
+            <span className="text-[10px] font-bold text-zinc-500 uppercase tracking-widest">
+              Today
+            </span>
+          </div>
         </div>
+
         {/* Messages will go here */}
+        <div className="mt-auto text-center text-zinc-400 text-sm italic py-10">
+          No messages yet. Say hi to {selectedChatPartner.name}!
+        </div>
       </div>
+
+      {/* Fixed Footer Input */}
+      <footer className="p-4 bg-white border-t border-zinc-200">
+        <form
+          className="flex items-center gap-3 max-w-5xl mx-auto"
+          onSubmit={(e) => {
+            e.preventDefault();
+            if (!chatMessage.trim()) return;
+            // TODO: Implementation for sending message
+            setChatMessage("");
+          }}
+        >
+          <input
+            type="text"
+            placeholder="Write a message..."
+            className="flex-1 h-11 bg-zinc-100 border-none rounded-2xl px-4 text-sm outline-none focus:ring-2 focus:ring-green-500/20 transition-all"
+            value={chatMessage}
+            onChange={(e) => setChatMessage(e.target.value)}
+          />
+          <button
+            type="submit"
+            disabled={!chatMessage.trim()}
+            className="h-11 px-6 rounded-2xl bg-green-600 text-sm font-semibold text-white hover:bg-green-700 active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed transition-all shadow-sm"
+          >
+            Send
+          </button>
+        </form>
+      </footer>
     </div>
   );
 };

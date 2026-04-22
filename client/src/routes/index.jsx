@@ -1,4 +1,9 @@
-import { createFileRoute, Link, redirect, useNavigate } from "@tanstack/react-router";
+import {
+  createFileRoute,
+  Link,
+  redirect,
+  useNavigate,
+} from "@tanstack/react-router";
 import { useState } from "react";
 import axios from "axios";
 import { useUserStore } from "../store/useUserStore";
@@ -19,17 +24,19 @@ function RouteComponent() {
     try {
       const response = await axios.post(
         `${import.meta.env.VITE_API_URL}/api/user/login`,
-        { email, password }
+        { email, password },
       );
-      
+
       localStorage.setItem("token", response.data.token);
       localStorage.setItem("user", JSON.stringify(response.data.user));
       useUserStore.getState().setUser(response.data.user);
-      
+
       navigate({ to: "/chat" });
     } catch (error) {
       console.error("Login error:", error);
-      alert("Login failed: " + (error.response?.data?.message || error.message));
+      alert(
+        "Login failed: " + (error.response?.data?.message || error.message),
+      );
     }
   }
 
@@ -37,11 +44,15 @@ function RouteComponent() {
     <div className="min-h-screen bg-white">
       <div className="mx-auto flex min-h-screen w-full max-w-md flex-col justify-center px-6 py-12">
         <div className="rounded-2xl border border-zinc-200 bg-white p-8 shadow-sm">
-          <header className="mb-8">
+          <header className="mb-3">
             <h1 className="text-2xl font-semibold tracking-tight text-green-600">
               Simple Messenger
             </h1>
           </header>
+
+          <p className="mb-7 text-medium text-zinc-600">
+            Data-light application with messages that disappear after 7 days.
+          </p>
 
           <h2 className="text-base font-medium text-zinc-900">Log in</h2>
           <p className="mt-1 text-sm text-zinc-600">
