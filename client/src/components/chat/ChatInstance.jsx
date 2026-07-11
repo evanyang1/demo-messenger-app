@@ -1,10 +1,32 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useUserStore } from "../../store/useUserStore";
 import axios from "axios";
 
 const ChatInstance = () => {
-  const { selectedChatPartner } = useUserStore();
+  const { user, selectedChatPartner, activeConversation, setActiveConversation } = useUserStore();
   const [chatMessage, setChatMessage] = useState("");
+
+  useEffect(() => {
+    if (!user || !selectedChatPartner) return;
+
+    const fetchConversation = async () => {
+      const token = localStorage.getItem("token");
+      try {
+        const res = await axios.get(
+          `${import.meta.env.VITE_API_URL}/api/conversation/byParticipants`,
+          {
+            params: { user1: user._id, user2: selectedChatPartner._id },
+            headers: { Authorization: `Bearer ${token}` },
+          },
+        );
+        setActiveConversation(res.data);
+      } catch (err) {
+        console.error("Failed to fetch conversation:", err);
+      }
+    };
+
+    fetchConversation();
+  }, [selectedChatPartner?._id]);
 
   if (!selectedChatPartner) {
     return (
@@ -33,6 +55,28 @@ const ChatInstance = () => {
       </div>
     );
   }
+
+  const handleSendMessage = async () => {
+    if (!chatMessage.trim() || !activeConversation) return;
+
+    const token = localStorage.getItem("token");
+    try {
+      await axios.post(
+        `${import.meta.env.VITE_API_URL}/api/message/createMessage`,
+        {
+          conversation: activeConversation._id,
+          sender: user._id,
+          content: chatMessage,
+        },
+        {
+          headers: { Authorization: `Bearer ${token}` },
+        },
+      );
+      setChatMessage("");
+    } catch (error) {
+      console.error("Failed to send message:", error);
+    }
+  };
 
   return (
     <div className="flex flex-col h-full">
@@ -73,9 +117,7 @@ const ChatInstance = () => {
           className="flex items-center gap-3 max-w-5xl mx-auto"
           onSubmit={(e) => {
             e.preventDefault();
-            if (!chatMessage.trim()) return;
-            // TODO: Implementation for sending message
-            setChatMessage("");
+            handleSendMessage();
           }}
         >
           <input

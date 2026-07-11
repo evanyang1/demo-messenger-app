@@ -72,6 +72,29 @@ function RouteComponent() {
       );
       useUserStore.getState().setUser(updatedUserResponse.data.user);
       setSearchUserQuery("");
+
+      // add conversation to model
+      const currentUser = useUserStore.getState().user;
+      const addedUser = currentUser.usersInConversation?.find(
+        (u) => u.email === searchUserQuery,
+      );
+
+      if (addedUser) {
+        try {
+          await axios.post(
+            `${import.meta.env.VITE_API_URL}/api/conversation/createConversation`,
+            {
+              participants: [currentUser._id, addedUser._id],
+            },
+            {
+              headers: { Authorization: `Bearer ${token}` },
+            },
+          );
+        } catch (err) {
+          console.error("Failed to create conversation:", err);
+        }
+      }
+      
     } catch (error) {
       console.error("Failed to add chat user:", error);
       alert(error.response?.data?.message || "Failed to add user");

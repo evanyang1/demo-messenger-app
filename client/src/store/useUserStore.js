@@ -6,10 +6,13 @@ export const useUserStore = create(
     (set) => ({
       user: null,
       selectedChatPartner: null,
+      activeConversation: null,
       setUser: (user) => set({ user }),
       setSelectedChatPartner: (partner) =>
         set({ selectedChatPartner: partner }),
-      logout: () => set({ user: null, selectedChatPartner: null }),
+      setActiveConversation: (conversation) =>
+        set({ activeConversation: conversation }),
+      logout: () => set({ user: null, selectedChatPartner: null, activeConversation: null }),
     }),
     { name: "user-storage" },
   ),
