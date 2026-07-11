@@ -87,7 +87,7 @@ userRouter.post("/addUserChat", authMiddleware, async (req, res) => {
   const { userEmailQuery } = req.body;
   const currentUser = req.user;
   try {
-    usersInConversation = currentUser.usersInConversation || [];
+    const usersInConversation = currentUser.usersInConversation || [];
     // make sure this user exists, then make sure this user doesn't exist in the array, then add this user to the array
     const userToAdd = await userModel.findOne({ email: userEmailQuery });
     if (!userToAdd) {
