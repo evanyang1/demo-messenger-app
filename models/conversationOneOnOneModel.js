@@ -7,16 +7,16 @@ const conversationOneOnOneSchema = new mongoose.Schema(
       ref: "User",
       validate: {
         validator: function (value) {
-          return Array.isArray(value) && value.length >= 2;
+          return Array.isArray(value) && value.length === 2;
         },
-        message: "A conversation must have at least 2 participants",
+        message: "A conversation must have exactly 2 participants",
       },
       required: true,
     },
     messages: [
       {
         type: mongoose.Schema.Types.ObjectId,
-        ref: "Message",
+        ref: "MessageOneOnOne",
       },
     ],
   },
