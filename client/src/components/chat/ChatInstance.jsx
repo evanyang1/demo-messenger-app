@@ -68,7 +68,7 @@ const ChatInstance = () => {
       </div>
 
       {/* Fixed Footer Input */}
-      <footer className="p-4 bg-white border-t border-zinc-200">
+      <footer className="p-4 mb-4 bg-white border-t border-zinc-200">
         <form
           className="flex items-center gap-3 max-w-5xl mx-auto"
           onSubmit={(e) => {
