@@ -1,10 +1,38 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useUserStore } from "../../store/useUserStore";
+import { io } from "socket.io-client";
 import axios from "axios";
 
 const ChatInstance = () => {
   const { user, selectedChatPartner, activeConversation, setActiveConversation } = useUserStore();
   const [chatMessage, setChatMessage] = useState("");
+  const [messages, setMessages] = useState([]);
+  const [loading, setLoading] = useState(false);
+  const messagesEndRef = useRef(null);
+  const socketRef = useRef(null);
+
+  useEffect(() => {
+    socketRef.current = io(import.meta.env.VITE_API_URL);
+    return () => {
+      socketRef.current.disconnect();
+    };
+  }, []);
+
+  useEffect(() => {
+    if (!activeConversation || !socketRef.current) return;
+    const socket = socketRef.current;
+    socket.emit("joinConversation", activeConversation._id);
+
+    const handleNewMessage = (message) => {
+      setMessages((prev) => [...prev, message]);
+    };
+    socket.on("newMessage", handleNewMessage);
+
+    return () => {
+      socket.emit("leaveConversation", activeConversation._id);
+      socket.off("newMessage", handleNewMessage);
+    };
+  }, [activeConversation?._id]);
 
   useEffect(() => {
     if (!user || !selectedChatPartner) return;
@@ -27,6 +55,31 @@ const ChatInstance = () => {
 
     fetchConversation();
   }, [selectedChatPartner?._id]);
+
+  useEffect(() => {
+    if (!activeConversation) return;
+
+    const fetchMessages = async () => {
+      setLoading(true);
+      try {
+        const res = await axios.get(
+          `${import.meta.env.VITE_API_URL}/api/message/conversation/${activeConversation._id}`,
+        );
+        setMessages(res.data);
+      } catch (err) {
+        console.error("Failed to fetch messages:", err);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    setMessages([]);
+    fetchMessages();
+  }, [activeConversation?._id]);
+
+  useEffect(() => {
+    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+  }, [messages]);
 
   if (!selectedChatPartner) {
     return (
@@ -78,9 +131,13 @@ const ChatInstance = () => {
     }
   };
 
+  const formatTime = (dateString) => {
+    const date = new Date(dateString);
+    return date.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
+  };
+
   return (
     <div className="flex flex-col h-full">
-      {/* Chat Header */}
       <div className="px-6 py-3 border-b border-zinc-200 flex items-center justify-between bg-white">
         <div className="flex items-center gap-3">
           <div className="w-10 h-10 rounded-full bg-green-100 text-green-700 flex items-center justify-center font-bold">
@@ -95,7 +152,6 @@ const ChatInstance = () => {
         </div>
       </div>
 
-      {/* Scrollable Messages Area */}
       <div className="flex-1 bg-zinc-50 overflow-y-auto p-4 sm:p-6 space-y-4 flex flex-col">
         <div className="flex justify-center mb-4">
           <div className="px-3 py-1 bg-zinc-200/50 rounded-full">
@@ -105,13 +161,49 @@ const ChatInstance = () => {
           </div>
         </div>
 
-        {/* Messages will go here */}
-        <div className="mt-auto text-center text-zinc-400 text-sm italic py-10">
-          No messages yet. Say hi to {selectedChatPartner.name}!
-        </div>
+        {loading ? (
+          <div className="flex-1 flex items-center justify-center text-zinc-400 text-sm">
+            Loading messages...
+          </div>
+        ) : messages.length === 0 ? (
+          <div className="mt-auto text-center text-zinc-400 text-sm italic py-10">
+            No messages yet. Say hi to {selectedChatPartner.name}!
+          </div>
+        ) : (
+          <div className="space-y-3">
+            {messages.map((msg) => {
+              const isOwn = msg.sender._id === user._id;
+              return (
+                <div
+                  key={msg._id}
+                  className={`flex ${isOwn ? "justify-end" : "justify-start"}`}
+                >
+                  <div
+                    className={`max-w-[75%] px-4 py-2 rounded-2xl ${
+                      isOwn
+                        ? "bg-green-600 text-white rounded-br-md"
+                        : "bg-white text-zinc-900 rounded-bl-md shadow-sm border border-zinc-100"
+                    }`}
+                  >
+                    <p className="text-sm leading-relaxed whitespace-pre-wrap break-words">
+                      {msg.content}
+                    </p>
+                    <p
+                      className={`text-[10px] mt-1 ${
+                        isOwn ? "text-green-200" : "text-zinc-400"
+                      }`}
+                    >
+                      {formatTime(msg.createdAt)}
+                    </p>
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        )}
+        <div ref={messagesEndRef} />
       </div>
 
-      {/* Fixed Footer Input */}
       <footer className="p-4 mb-4 bg-white border-t border-zinc-200">
         <form
           className="flex items-center gap-3 max-w-5xl mx-auto"
