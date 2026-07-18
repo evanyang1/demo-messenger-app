@@ -213,11 +213,11 @@ const ChatInstance = () => {
                         {formatTime(msg.createdAt)}
                       </p>
                     </div>
-                    <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 opacity-0 group-hover:opacity-100 transition-all duration-200 pointer-events-none z-10">
-                      <div className="bg-zinc-800 text-white text-[11px] font-medium px-2.5 py-1.5 rounded-lg shadow-lg whitespace-nowrap">
+                    <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 opacity-0 group-hover:opacity-100 group-hover:translate-y-0 translate-y-1 transition-all duration-200 pointer-events-none z-10">
+                      <div className="bg-zinc-800/90 backdrop-blur-sm text-white text-[11px] font-medium px-2.5 py-1.5 rounded-lg shadow-lg whitespace-nowrap">
                         {formatFullDate(msg.createdAt)}
                       </div>
-                      <div className="absolute top-full left-1/2 -translate-x-1/2 border-[5px] border-transparent border-t-zinc-800"></div>
+                      <div className="absolute top-full left-1/2 -translate-x-1/2 border-[5px] border-transparent border-t-zinc-800/90"></div>
                     </div>
                   </div>
                 </div>
