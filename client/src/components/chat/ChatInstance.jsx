@@ -3,8 +3,15 @@ import { useUserStore } from "../../store/useUserStore";
 import { io } from "socket.io-client";
 import axios from "axios";
 
+const currentDate = new Date(); // get current date, should be updated somewhat regularly
+
 const ChatInstance = () => {
-  const { user, selectedChatPartner, activeConversation, setActiveConversation } = useUserStore();
+  const {
+    user,
+    selectedChatPartner,
+    activeConversation,
+    setActiveConversation,
+  } = useUserStore();
   const [chatMessage, setChatMessage] = useState("");
   const [messages, setMessages] = useState([]);
   const [loading, setLoading] = useState(false);
@@ -120,6 +127,8 @@ const ChatInstance = () => {
           conversation: activeConversation._id,
           sender: user._id,
           content: chatMessage,
+          messageType: "text",
+          timestamp: currentDate.toISOString(), // send the current date as timestamp
         },
         {
           headers: { Authorization: `Bearer ${token}` },
@@ -134,6 +143,17 @@ const ChatInstance = () => {
   const formatTime = (dateString) => {
     const date = new Date(dateString);
     return date.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
+  };
+
+  const formatFullDate = (dateString) => {
+    const date = new Date(dateString);
+    return date.toLocaleDateString([], {
+      month: "short",
+      day: "numeric",
+      year: "numeric",
+      hour: "2-digit",
+      minute: "2-digit",
+    });
   };
 
   return (
@@ -154,11 +174,7 @@ const ChatInstance = () => {
 
       <div className="flex-1 bg-zinc-50 overflow-y-auto p-4 sm:p-6 space-y-4 flex flex-col">
         <div className="flex justify-center mb-4">
-          <div className="px-3 py-1 bg-zinc-200/50 rounded-full">
-            <span className="text-[10px] font-bold text-zinc-500 uppercase tracking-widest">
-              Today
-            </span>
-          </div>
+          <div className="px-3 py-1 bg-zinc-200/50 rounded-full"></div>
         </div>
 
         {loading ? (
@@ -178,23 +194,31 @@ const ChatInstance = () => {
                   key={msg._id}
                   className={`flex ${isOwn ? "justify-end" : "justify-start"}`}
                 >
-                  <div
-                    className={`max-w-[75%] px-4 py-2 rounded-2xl ${
-                      isOwn
-                        ? "bg-green-600 text-white rounded-br-md"
-                        : "bg-white text-zinc-900 rounded-bl-md shadow-sm border border-zinc-100"
-                    }`}
-                  >
-                    <p className="text-sm leading-relaxed whitespace-pre-wrap break-words">
-                      {msg.content}
-                    </p>
-                    <p
-                      className={`text-[10px] mt-1 ${
-                        isOwn ? "text-green-200" : "text-zinc-400"
+                  <div className="relative group">
+                    <div
+                      className={`max-w-[75%] px-4 py-2 rounded-2xl ${
+                        isOwn
+                          ? "bg-green-600 text-white rounded-br-md"
+                          : "bg-white text-zinc-900 rounded-bl-md shadow-sm border border-zinc-100"
                       }`}
                     >
-                      {formatTime(msg.createdAt)}
-                    </p>
+                      <p className="text-sm leading-relaxed whitespace-pre-wrap break-words">
+                        {msg.content}
+                      </p>
+                      <p
+                        className={`text-[10px] mt-1 ${
+                          isOwn ? "text-green-200" : "text-zinc-400"
+                        }`}
+                      >
+                        {formatTime(msg.createdAt)}
+                      </p>
+                    </div>
+                    <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 opacity-0 group-hover:opacity-100 transition-all duration-200 pointer-events-none z-10">
+                      <div className="bg-zinc-800 text-white text-[11px] font-medium px-2.5 py-1.5 rounded-lg shadow-lg whitespace-nowrap">
+                        {formatFullDate(msg.createdAt)}
+                      </div>
+                      <div className="absolute top-full left-1/2 -translate-x-1/2 border-[5px] border-transparent border-t-zinc-800"></div>
+                    </div>
                   </div>
                 </div>
               );

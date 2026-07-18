@@ -25,6 +25,10 @@ const messageOneOnOneSchema = new mongoose.Schema(
       enum: ["text", "image", "file", "system"],
       default: "text",
     },
+    timestamp: {
+      type: Date,
+      default: Date.now,
+    }
   },
   {
     timestamps: true,
